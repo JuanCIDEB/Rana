@@ -11,7 +11,7 @@ SNAIL_SPEED = 79
 INV_FRAMES = 40
 inv_counter = INV_FRAMES
 inv_flag = False
-
+print("Hola soy Leonardo")
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("El juego de rana sin nombre")
