@@ -8,8 +8,16 @@ TIMECLICK = 0
 # currenttime = 0
 # currenttime = pygame.time.get_ticks()
 CURSOR_SIZE = 70
-FLY_SIZE = 50
 
+FLY_SIZE = 50
+TOUNGE_COLOR= (255, 156, 122)
+TOUNGE_COLOR_W= (255,255,255)
+TOUNGE_COLOR_B= (0,68,19)
+TOUNGE_WIDTH = 9
+TOUNGE_START = (WIDTH-317, HEIGHT-130)
+
+
+SPACE_CLICKED = True
 class Enemy(pg.sprite.Sprite):
     def __init__(self):
         self.enemy_fly1_surf = pygame.image.load('resources/creatures/enemies/emboscadademoscas.png')
@@ -29,8 +37,11 @@ class Cursor(pg.sprite.Sprite):
 
 pg.init()
 screen = pg.display.set_mode((WIDTH, HEIGHT))
-bg_img = pg.image.load('resources/backgrounds/background.png')
-bg_img = pg.transform.scale(bg_img, (WIDTH, HEIGHT))
+
+
+
+
+
 
 all_sprites = pg.sprite.Group()
 cursor = Cursor()
@@ -56,12 +67,12 @@ def main():
     cursor = pg.transform.scale(cursor, (CURSOR_SIZE, CURSOR_SIZE))
 
     player_rect = cursor.get_rect(topleft=(300, 200))
-    # This pygame.Rect has the dimensions of the screen and
-    # is used to clamp the player_rect to this area.
     screen_rect = screen.get_rect()
     speed = 7.5
 
+
     while True:
+        SPACE_CLICKED = True
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
@@ -75,22 +86,40 @@ def main():
             player_rect.x -= speed
         if pressed[pg.K_d]:
             player_rect.x += speed
-        if pressed[pg.K_SPACE]:  # and has_clicked:
+        if pressed[pg.K_SPACE] and SPACE_CLICKED:  # and has_clicked:
             cursor = pg.image.load('resources/creatures/other/cursorCLICK.png')
             cursor = pg.transform.scale(cursor, (CURSOR_SIZE, CURSOR_SIZE))
             pg.mixer.music.load('resources/audio/FXclick.wav')
-            pg.mixer.music.play(2)  #loops-1 en parentesis para que se repita infinitamente
+            pg.mixer.music.set_volume(0.1)
+            pg.mixer.music.play(1)  #loops-1 en parentesis para que se repita infinitamente
+            cursor_pressed = True
+            SPACE_CLICKED = False
 
         else:
             cursor = pg.image.load('resources/creatures/other/cursorNORM.png')
             cursor = pg.transform.scale(cursor, (CURSOR_SIZE, CURSOR_SIZE))
+            cursor_pressed = False
 
         # Clamp the rect to the dimensions of the screen_rect.
         player_rect.clamp_ip(screen_rect)
         bg_img = pg.image.load('resources/backgrounds/background.png')
         bg_img = pg.transform.scale(bg_img, (WIDTH, HEIGHT))
+        frog_img = pg.image.load('resources/creatures/frog/rana.png')
+        frog_img = pg.transform.scale(frog_img, (WIDTH/5.5, HEIGHT/5))
+        fly_img = pg.image.load('resources/creatures/enemies/emboscadademoscas.png')
+        fly_img = pg.transform.scale(fly_img, (WIDTH / 14, HEIGHT / 19))
+        pg.display.set_icon(frog_img)
         screen.blit(bg_img, (0, 0))
+        screen.blit(frog_img, (WIDTH-375, HEIGHT-135))
+        screen.blit(fly_img, (WIDTH/2.1, HEIGHT/16))
+        if cursor_pressed:
+            pg.draw.line(screen, TOUNGE_COLOR_W, (TOUNGE_START), (player_rect.x + 35, player_rect.y + 40), TOUNGE_WIDTH+6)
+            pg.draw.line(screen, TOUNGE_COLOR_B, (TOUNGE_START), (player_rect.x + 35, player_rect.y + 40),
+                         TOUNGE_WIDTH + 4)
+            pg.draw.line(screen, TOUNGE_COLOR, (TOUNGE_START), (player_rect.x + 35, player_rect.y + 40), TOUNGE_WIDTH)
         screen.blit(cursor, player_rect)
+        print(player_rect.x, player_rect.y)
+
 
         # Update
         all_sprites.update()
